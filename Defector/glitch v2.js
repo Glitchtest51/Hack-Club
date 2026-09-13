@@ -39,7 +39,7 @@ export default function bot({ history, memory }) {
 
         if (i>=1) {
             checked++
-            if (history[i].opponent === history[i].opponent[i-1].you) tft++
+            if (history[i].opponent === history[i-1].you) tft++
         }
     }
 
