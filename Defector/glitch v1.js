@@ -5,32 +5,32 @@ export default function bot({ history, memory }) {
     const coopAtStartRandom = memory.coopAtStartRandom
     let state = memory.state
 
-    if (history.length < coopAtStartRandom) {
+    if (hLen < coopAtStartRandom) {
         move = "C"
         memory = {coopAtStartRandom, state}
         return [move, memory]
     }
 
-    if (history.length === coopAtStartRandom) {
+    if (hLen === coopAtStartRandom) {
         move = "D"
         memory = {coopAtStartRandom, state}
         return [move, memory]
     }
 
-    if (history.length === coopAtStartRandom + 1) {
+    if (hLen === coopAtStartRandom + 1) {
         move = "C"
         memory = {coopAtStartRandom, state}
         return [move, memory]
     }
     
-    if (history.length === coopAtStartRandom + 2) {
+    if (hLen === coopAtStartRandom + 2) {
         if (oppHistory[coopAtStartRandom + 1] === "C") state = "exploit"
         else state = "recovery"
     }
 
     switch (state) {
         case "exploit": {
-            if (oppHistory.slice(Math.max(0, oppHistory.length - 3)).filter(x => x === "D").length >= 2) {
+            if (oppHistory.slice(Math.max(0, opphLen - 3)).filter(x => x === "D").length >= 2) {
                 state = "defense"
                 break
             } else {
@@ -40,7 +40,7 @@ export default function bot({ history, memory }) {
             }
         }
         case "recovery": {
-            if (oppHistory[oppHistory.length - 1] === "C") {
+            if (oppHistory[opphLen - 1] === "C") {
                 state = "cooperate"
                 move = "C"
                 memory = {coopAtStartRandom, state}
@@ -53,7 +53,7 @@ export default function bot({ history, memory }) {
             }
         }
         case "cooperate": {
-            if (oppHistory.slice(Math.max(0, oppHistory.length - 4)).filter(x => x === "D").length >= 2) {
+            if (oppHistory.slice(Math.max(0, opphLen - 4)).filter(x => x === "D").length >= 2) {
                 state = "defense"
                 move = "D"
                 memory = {coopAtStartRandom, state}
@@ -65,7 +65,7 @@ export default function bot({ history, memory }) {
             return [move, memory]
         }
         case "defense": {
-            let recent = oppHistory.slice(Math.max(0, oppHistory.length - 6))
+            let recent = oppHistory.slice(Math.max(0, opphLen - 6))
             let defectRate = recent.filter(x => x === "D").length / recent.length
 
             if (defectRate >= 0.35) {
