@@ -24,10 +24,31 @@ export default function bot({ history, memory }) {
         }
     }
 
+    // probe 1
     if (hLen === 0) return ["C", memory]
 
-    let oppDefected = false
+    // random check
+    let c = 0
+    let d = 0
+    let tft = 0
+    let checked = 0
 
+    for (let i = 0; i < hLen; i++) {
+        if (history[i].opponent === "C") c++
+        else d++
+
+        if (i>=1) {
+            checked++
+            if (history[i].opponent === history[i].opponent[i-1].you) tft++
+        }
+    }
+
+    const cRate = c / hLen
+    const tftRate = tft / checked
+    if (cRate > 0.25 && cRate < 0.75 && tftRate > 0.25 && tftRate < 0.75) return ["D", memory]
+
+    // fallback
+    let oppDefected = false
     for (let i = 0; i < hLen; i++) {
         if (history[i].opponent === "D") {
             oppDefected = true
@@ -35,6 +56,7 @@ export default function bot({ history, memory }) {
         }
     }
 
+    // abuse always c
     if (!oppDefected) {
         let OurLastD = -1
 
@@ -46,25 +68,24 @@ export default function bot({ history, memory }) {
         }
 
         if (OurLastD === -1) {
-            if (hLen >= 5) {
-                return ["D", memory]
-            }
+            if (hLen >= 5) return ["D", memory]
             return ["C", memory]
         } 
 
-        if (OurLastD === hLen - 1) {
-            return ["C", memory]
-        } 
+        if (OurLastD === hLen - 1) return ["C", memory]
 
         return ["D", memory]
     }
 
     const last = history[hLen - 1]
     const previous = hLen >= 2 ? history[hLen - 2] : null
+    const befPrevious = hLen >= 3 ? history[hLen - 3] : null
 
-    if (last.opponent === "D" && previous != null && previous.you === "D" && previous.opponent === "C") {
+    // recovery
+    if (last.opponent === "D" && previous != null && previous.you === "D" && (previous.opponent === "C" || (befPrevious != null && befPrevious.opponent === "C"))) {
         return ["C", memory]
     }
 
+    // tit for tat
     return [last.opponent, memory]
 }
