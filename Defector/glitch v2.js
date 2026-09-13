@@ -62,9 +62,9 @@ export default function bot({ history, memory }) {
     const last = history[hLen - 1]
     const previous = hLen >= 2 ? history[hLen - 2] : null
 
-    if (last.opponent === "D" && previous != null && previous.you === "D") {
+    if (last.opponent === "D" && previous != null && previous.you === "D" && previous.opponent === "C") {
         return ["C", memory]
     }
 
-    return [history.at(-1).opponent, memory]
+    return [last.opponent, memory]
 }
