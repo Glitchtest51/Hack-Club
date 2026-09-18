@@ -15,7 +15,7 @@ export default function bot({ history, memory }) {
 
     if (oppDefected) {
         let dCountLast5 = 0
-        for (let i = hLen; i >= Math.max(0, hLen-5); i--) {
+        for (let i = hLen-1; i >= Math.max(0, hLen-5); i--) {
             if (history[i].opponent === "D") {
                 dCountLast5++
             }
